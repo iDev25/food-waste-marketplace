@@ -18,19 +18,33 @@ const useListingStore = create((set, get) => ({
     try {
       set({ loading: true, error: null })
       
+      console.log('Fetching listings...')
+      
+      // Simple query to check if the table exists
+      const { data: checkData, error: checkError } = await supabase
+        .from('listings')
+        .select('id')
+        .limit(1)
+      
+      if (checkError) {
+        console.error('Error checking listings table:', checkError)
+        throw checkError
+      }
+      
+      console.log('Listings table exists, fetching data...')
+      
+      // Now fetch the actual data
       const { data, error } = await supabase
         .from('listings')
         .select(`
           *,
-          profiles:supplier_id(
-            id,
-            name,
-            avatar_url
-          )
+          profiles:supplier_id(id, name, avatar_url)
         `)
         .order('created_at', { ascending: false })
       
       if (error) throw error
+      
+      console.log('Fetched listings:', data)
       
       set({ 
         listings: data || [],
@@ -54,11 +68,7 @@ const useListingStore = create((set, get) => ({
         .from('listings')
         .select(`
           *,
-          profiles:supplier_id(
-            id,
-            name,
-            avatar_url
-          )
+          profiles:supplier_id(id, name, avatar_url)
         `)
         .eq('supplier_id', userId)
         .order('created_at', { ascending: false })

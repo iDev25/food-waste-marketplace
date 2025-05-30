@@ -3,14 +3,32 @@ import { Search } from 'lucide-react'
 import ListingCard from '../components/ListingCard'
 import ListingFilters from '../components/ListingFilters'
 import useListingStore from '../stores/listingStore'
+import { supabase } from '../lib/supabase'
 
 const FoodListings = () => {
   const { filteredListings, loading, error, fetchListings } = useListingStore()
   const [searchTerm, setSearchTerm] = useState('')
   const [displayedListings, setDisplayedListings] = useState([])
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
   
   useEffect(() => {
-    fetchListings()
+    // Refresh the Supabase schema cache to ensure it has the latest schema
+    const refreshSchema = async () => {
+      try {
+        console.log('Refreshing schema and fetching listings...')
+        setIsInitialLoad(true)
+        
+        // Fetch the listings
+        await fetchListings()
+        
+        setIsInitialLoad(false)
+      } catch (err) {
+        console.error('Error refreshing schema:', err)
+        setIsInitialLoad(false)
+      }
+    }
+    
+    refreshSchema()
   }, [fetchListings])
   
   useEffect(() => {
@@ -53,13 +71,19 @@ const FoodListings = () => {
       
       <ListingFilters />
       
-      {loading ? (
+      {isInitialLoad || loading ? (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
         </div>
       ) : error ? (
         <div className="bg-red-50 p-4 rounded-md">
           <p className="text-red-700">Error loading listings: {error}</p>
+          <button 
+            className="mt-2 btn-secondary btn-sm"
+            onClick={() => fetchListings()}
+          >
+            Try Again
+          </button>
         </div>
       ) : displayedListings.length === 0 ? (
         <div className="text-center py-12">
