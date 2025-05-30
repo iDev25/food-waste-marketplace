@@ -14,19 +14,19 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     // Check for active session on initial load
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setUser(data?.session?.user || null);
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
       setLoading(false);
       
       // Set up auth state listener
-      const { data: authListener } = supabase.auth.onAuthStateChange(
-        (event, session) => {
+      const { data: { subscription } } = await supabase.auth.onAuthStateChange(
+        (_event, session) => {
           setUser(session?.user || null);
         }
       );
       
       return () => {
-        authListener?.subscription?.unsubscribe();
+        subscription.unsubscribe();
       };
     };
     
@@ -35,43 +35,23 @@ export function AuthProvider({ children }) {
 
   // Sign up function
   const signUp = async (email, password) => {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error };
-    }
+    return await supabase.auth.signUp({
+      email,
+      password,
+    });
   };
 
   // Sign in function
   const signIn = async (email, password) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      return { data, error: null };
-    } catch (error) {
-      return { data: null, error };
-    }
+    return await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
   };
 
   // Sign out function
   const signOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      return { error: null };
-    } catch (error) {
-      return { error };
-    }
+    return await supabase.auth.signOut();
   };
 
   const value = {
@@ -79,12 +59,12 @@ export function AuthProvider({ children }) {
     loading,
     signUp,
     signIn,
-    signOut
+    signOut,
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }

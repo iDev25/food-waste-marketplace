@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useAuth() || { user: null, signOut: () => {} };
   const navigate = useNavigate();
   const location = useLocation();
 
