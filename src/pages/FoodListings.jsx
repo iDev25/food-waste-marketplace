@@ -1,34 +1,17 @@
 import { useEffect, useState } from 'react'
-import { Search } from 'lucide-react'
+import { Search, Filter } from 'lucide-react'
+import { motion } from 'framer-motion'
 import ListingCard from '../components/ListingCard'
 import ListingFilters from '../components/ListingFilters'
 import useListingStore from '../stores/listingStore'
-import { supabase } from '../lib/supabase'
 
 const FoodListings = () => {
   const { filteredListings, loading, error, fetchListings } = useListingStore()
   const [searchTerm, setSearchTerm] = useState('')
   const [displayedListings, setDisplayedListings] = useState([])
-  const [isInitialLoad, setIsInitialLoad] = useState(true)
   
   useEffect(() => {
-    // Refresh the Supabase schema cache to ensure it has the latest schema
-    const refreshSchema = async () => {
-      try {
-        console.log('Refreshing schema and fetching listings...')
-        setIsInitialLoad(true)
-        
-        // Fetch the listings
-        await fetchListings()
-        
-        setIsInitialLoad(false)
-      } catch (err) {
-        console.error('Error refreshing schema:', err)
-        setIsInitialLoad(false)
-      }
-    }
-    
-    refreshSchema()
+    fetchListings()
   }, [fetchListings])
   
   useEffect(() => {
@@ -45,16 +28,41 @@ const FoodListings = () => {
     }
   }, [filteredListings, searchTerm])
   
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  }
+  
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1 }
+  }
+  
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Find Food</h1>
-        <p className="mt-2 text-lg text-gray-600">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8"
+      >
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Food</h1>
+        <p className="text-lg text-gray-600">
           Browse available food items from local businesses and individuals.
         </p>
-      </div>
+      </motion.div>
       
-      <div className="mb-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="mb-6"
+      >
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" />
@@ -67,39 +75,54 @@ const FoodListings = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-      </div>
+      </motion.div>
       
-      <ListingFilters />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <ListingFilters />
+      </motion.div>
       
-      {isInitialLoad || loading ? (
+      {loading ? (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
         </div>
       ) : error ? (
         <div className="bg-red-50 p-4 rounded-md">
           <p className="text-red-700">Error loading listings: {error}</p>
-          <button 
-            className="mt-2 btn-secondary btn-sm"
-            onClick={() => fetchListings()}
-          >
-            Try Again
-          </button>
         </div>
       ) : displayedListings.length === 0 ? (
-        <div className="text-center py-12">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="text-center py-12"
+        >
+          <div className="inline-flex items-center justify-center h-24 w-24 rounded-full bg-gray-100 text-gray-400 mb-4">
+            <Filter className="h-12 w-12" />
+          </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No listings found</h3>
-          <p className="text-gray-600">
+          <p className="text-gray-600 max-w-md mx-auto">
             {searchTerm ? 
               `No results found for "${searchTerm}". Try a different search term or clear filters.` : 
               'No listings match your current filters. Try adjusting your filters or check back later.'}
           </p>
-        </div>
+        </motion.div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
           {displayedListings.map(listing => (
-            <ListingCard key={listing.id} listing={listing} />
+            <motion.div key={listing.id} variants={item}>
+              <ListingCard listing={listing} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
     </div>
   )

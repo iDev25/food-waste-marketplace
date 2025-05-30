@@ -1,57 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --primary-50: #f0fdf4;
-  --primary-100: #dcfce7;
-  --primary-200: #bbf7d0;
-  --primary-300: #86efac;
-  --primary-400: #4ade80;
-  --primary-500: #22c55e;
-  --primary-600: #16a34a;
-  --primary-700: #15803d;
-  --primary-800: #166534;
-  --primary-900: #14532d;
-  --primary-950: #052e16;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-@layer base {
-  body {
-    @apply bg-gray-50 text-gray-900;
-  }
+body {
+  @apply bg-gray-50 text-gray-900 font-sans;
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
 }
 
+/* Custom component classes */
 @layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md shadow-sm transition-colors duration-200;
+  }
+  
   .btn-primary {
-    @apply px-4 py-2 bg-primary-600 text-white rounded-md font-medium shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors;
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
   }
   
   .btn-secondary {
-    @apply px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md font-medium shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors;
-  }
-  
-  .btn-danger {
-    @apply px-4 py-2 bg-red-600 text-white rounded-md font-medium shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors;
+    @apply bg-white text-primary-700 hover:bg-primary-50 border-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500;
   }
   
   .btn-sm {
-    @apply px-3 py-1.5 text-sm;
+    @apply px-3 py-2 text-sm;
   }
   
   .btn-lg {
-    @apply px-6 py-3 text-lg;
-  }
-  
-  .input {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
-  }
-  
-  .label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+    @apply px-6 py-3.5 text-lg;
   }
   
   .card {
-    @apply bg-white rounded-lg shadow-md overflow-hidden;
+    @apply bg-white rounded-xl shadow-soft overflow-hidden transition-all duration-300;
   }
+  
+  .input {
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm;
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-green {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .badge-yellow {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  
+  .badge-red {
+    @apply bg-red-100 text-red-800;
+  }
+  
+  .section {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
+  
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .heading-1 {
+    @apply text-4xl font-extrabold text-gray-900 font-display sm:text-5xl md:text-6xl;
+  }
+  
+  .heading-2 {
+    @apply text-3xl font-bold text-gray-900 font-display sm:text-4xl;
+  }
+  
+  .heading-3 {
+    @apply text-2xl font-bold text-gray-900 font-display;
+  }
+  
+  .heading-4 {
+    @apply text-xl font-semibold text-gray-900 font-display;
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400;
+}
+
+/* Hover card effect */
+.hover-card-rise {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card-rise:hover {
+  transform: translateY(-5px);
+  @apply shadow-lg;
+}
+
+/* Glassmorphism */
+.glass {
+  @apply bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg;
+}
+
+/* Responsive image grid */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+/* Navbar active link */
+.nav-link-active {
+  @apply border-primary-500 text-gray-900;
 }

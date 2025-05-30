@@ -1,82 +1,124 @@
 import { Link } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
+import { MapPin, Clock, Heart } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 const ListingCard = ({ listing }) => {
-  const {
-    id,
-    title,
-    price,
-    images,
-    location,
-    created_at,
-    expiry_date,
-    profiles
-  } = listing
-
-  // Get the first image or use a placeholder
-  const imageUrl = images && images.length > 0 
-    ? images[0] 
-    : 'https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-
-  // Format the created date
-  const createdDate = new Date(created_at)
-  const timeAgo = formatDistanceToNow(createdDate, { addSuffix: true })
-
-  // Check if item is expiring soon (within 24 hours)
-  const isExpiringSoon = expiry_date && (() => {
-    const expiryDate = new Date(expiry_date)
+  const [isFavorite, setIsFavorite] = useState(false)
+  
+  const isExpiringSoon = () => {
+    if (!listing.expiry_date) return false
+    const expiryDate = new Date(listing.expiry_date)
     const now = new Date()
     const diffHours = (expiryDate - now) / (1000 * 60 * 60)
     return diffHours < 24 && diffHours > 0
-  })()
-
+  }
+  
+  const toggleFavorite = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsFavorite(!isFavorite)
+  }
+  
   return (
-    <Link to={`/listings/${id}`} className="card group">
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={imageUrl} 
-          alt={title} 
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        {isExpiringSoon && (
-          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-            Expiring Soon
+    <motion.div 
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.2 }}
+      className="card hover:shadow-lg"
+    >
+      <Link to={`/listings/${listing.id}`}>
+        <div className="relative h-48 w-full overflow-hidden">
+          {listing.images && listing.images.length > 0 ? (
+            <img 
+              src={listing.images[0]} 
+              alt={listing.title} 
+              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+              <span className="text-gray-400">No image</span>
+            </div>
+          )}
+          
+          <button
+            onClick={toggleFavorite}
+            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white bg-opacity-80 flex items-center justify-center transition-colors duration-200 hover:bg-opacity-100"
+          >
+            <Heart 
+              className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} 
+            />
+          </button>
+          
+          {listing.price === 0 ? (
+            <div className="absolute top-2 left-2 bg-secondary-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+              Free
+            </div>
+          ) : (
+            <div className="absolute top-2 left-2 bg-primary-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+              ${listing.price?.toFixed(2) || '0.00'}
+            </div>
+          )}
+          
+          {isExpiringSoon() && (
+            <div className="absolute bottom-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center">
+              <Clock className="h-3 w-3 mr-1" />
+              Expiring soon
+            </div>
+          )}
+        </div>
+        
+        <div className="p-4">
+          <h3 className="text-lg font-medium text-gray-900 truncate">{listing.title}</h3>
+          
+          <div className="mt-1 flex items-center text-sm text-gray-500">
+            <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+            <span className="truncate">{listing.location || 'Location not specified'}</span>
           </div>
-        )}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-          <p className="text-white font-bold text-lg">${price.toFixed(2)}</p>
-        </div>
-      </div>
-      <div className="p-4">
-        <h3 className="font-medium text-gray-900 group-hover:text-primary-600 transition-colors">
-          {title}
-        </h3>
-        <div className="mt-2 flex justify-between items-center text-sm text-gray-500">
-          <p>{location}</p>
-          <p>{timeAgo}</p>
-        </div>
-        {profiles && (
+          
+          <div className="mt-2">
+            <div className="flex flex-wrap gap-1">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                {listing.category || 'Uncategorized'}
+              </span>
+              
+              {listing.dietary_info && listing.dietary_info.map((diet, index) => (
+                <span 
+                  key={index}
+                  className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-800"
+                >
+                  {diet}
+                </span>
+              ))}
+            </div>
+          </div>
+          
           <div className="mt-3 flex items-center">
-            <div className="flex-shrink-0 h-6 w-6 rounded-full bg-gray-200 overflow-hidden">
-              {profiles.avatar_url ? (
+            <div className="flex-shrink-0">
+              {listing.profiles?.avatar_url ? (
                 <img 
-                  src={profiles.avatar_url} 
-                  alt={profiles.name || 'User'} 
-                  className="h-full w-full object-cover"
+                  className="h-8 w-8 rounded-full object-cover"
+                  src={listing.profiles.avatar_url}
+                  alt={listing.profiles.name}
                 />
               ) : (
-                <div className="h-full w-full flex items-center justify-center bg-primary-100 text-primary-800 text-xs font-bold">
-                  {profiles.name ? profiles.name.charAt(0).toUpperCase() : 'U'}
+                <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                  <span className="text-xs font-medium text-primary-700">
+                    {listing.profiles?.name?.charAt(0) || '?'}
+                  </span>
                 </div>
               )}
             </div>
-            <p className="ml-2 text-xs text-gray-500">
-              {profiles.name || 'Anonymous'}
-            </p>
+            <div className="ml-2">
+              <p className="text-sm font-medium text-gray-900">{listing.profiles?.name || 'Anonymous'}</p>
+              <p className="text-xs text-gray-500">
+                {listing.created_at && formatDistanceToNow(new Date(listing.created_at), { addSuffix: true })}
+              </p>
+            </div>
           </div>
-        )}
-      </div>
-    </Link>
+        </div>
+      </Link>
+    </motion.div>
   )
 }
 

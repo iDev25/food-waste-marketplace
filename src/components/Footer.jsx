@@ -1,111 +1,118 @@
-import { Link } from 'react-router-dom'
-import { Facebook, Twitter, Instagram, Mail } from 'lucide-react'
+import { Link } from 'react-router-dom';
+import { Mail, Phone, MapPin, Facebook, Instagram, Twitter } from 'lucide-react';
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear()
-  
   return (
-    <footer className="bg-white border-t border-gray-200">
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center">
-              <svg className="h-8 w-8 text-primary-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2a10 10 0 1 0 10 10H12V2z" fill="currentColor" fillOpacity="0.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M21 12a9 9 0 0 0-9-9v9h9z" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 12 2 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 12 12 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span className="ml-2 text-xl font-bold text-gray-900">iFoodCycle</span>
+    <footer className="bg-gray-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center mb-4">
+              <div className="h-10 w-10 rounded-full bg-primary-500 flex items-center justify-center mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+              <span className="text-xl font-bold text-white">iFoodCycle</span>
             </div>
-            <p className="mt-4 text-gray-600 max-w-md">
-              iFoodCycle connects surplus food with people who need it. Our mission is to reduce food waste, support communities, and create a more sustainable food system.
+            <p className="text-gray-400 mb-4">
+              Reducing food waste and fighting hunger by connecting surplus food with people who need it.
             </p>
-            <div className="mt-6 flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-gray-500">
-                <span className="sr-only">Facebook</span>
-                <Facebook className="h-6 w-6" />
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-400 hover:text-primary-500 transition-colors">
+                <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-gray-500">
-                <span className="sr-only">Twitter</span>
-                <Twitter className="h-6 w-6" />
+              <a href="#" className="text-gray-400 hover:text-primary-500 transition-colors">
+                <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-gray-500">
-                <span className="sr-only">Instagram</span>
-                <Instagram className="h-6 w-6" />
-              </a>
-              <a href="mailto:info@ifoodcycle.com" className="text-gray-400 hover:text-gray-500">
-                <span className="sr-only">Email</span>
-                <Mail className="h-6 w-6" />
+              <a href="#" className="text-gray-400 hover:text-primary-500 transition-colors">
+                <Twitter className="h-5 w-5" />
               </a>
             </div>
           </div>
           
           <div>
-            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-              Navigation
-            </h3>
-            <ul className="mt-4 space-y-4">
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-base text-gray-600 hover:text-gray-900">
-                  Home
-                </Link>
+                <Link to="/" className="text-gray-400 hover:text-primary-500 transition-colors">Home</Link>
               </li>
               <li>
-                <Link to="/listings" className="text-base text-gray-600 hover:text-gray-900">
-                  Find Food
-                </Link>
+                <Link to="/listings" className="text-gray-400 hover:text-primary-500 transition-colors">Browse Food</Link>
               </li>
               <li>
-                <Link to="/dashboard" className="text-base text-gray-600 hover:text-gray-900">
-                  Dashboard
-                </Link>
+                <Link to="/how-it-works" className="text-gray-400 hover:text-primary-500 transition-colors">How It Works</Link>
               </li>
               <li>
-                <Link to="/create-listing" className="text-base text-gray-600 hover:text-gray-900">
-                  Add Listing
-                </Link>
+                <Link to="/about" className="text-gray-400 hover:text-primary-500 transition-colors">About Us</Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-gray-400 hover:text-primary-500 transition-colors">Contact</Link>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">
-              Legal
-            </h3>
-            <ul className="mt-4 space-y-4">
+            <h3 className="text-lg font-semibold mb-4">Resources</h3>
+            <ul className="space-y-2">
               <li>
-                <Link to="/about" className="text-base text-gray-600 hover:text-gray-900">
-                  About Us
-                </Link>
+                <Link to="/faq" className="text-gray-400 hover:text-primary-500 transition-colors">FAQ</Link>
               </li>
               <li>
-                <Link to="/terms" className="text-base text-gray-600 hover:text-gray-900">
-                  Terms of Service
-                </Link>
+                <Link to="/blog" className="text-gray-400 hover:text-primary-500 transition-colors">Blog</Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-base text-gray-600 hover:text-gray-900">
-                  Privacy Policy
-                </Link>
+                <Link to="/partners" className="text-gray-400 hover:text-primary-500 transition-colors">Partners</Link>
               </li>
               <li>
-                <Link to="/contact" className="text-base text-gray-600 hover:text-gray-900">
-                  Contact Us
-                </Link>
+                <Link to="/donate" className="text-gray-400 hover:text-primary-500 transition-colors">Donate</Link>
+              </li>
+              <li>
+                <Link to="/volunteer" className="text-gray-400 hover:text-primary-500 transition-colors">Volunteer</Link>
+              </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
+            <ul className="space-y-3">
+              <li className="flex items-start">
+                <MapPin className="h-5 w-5 text-primary-500 mr-2 mt-0.5" />
+                <span className="text-gray-400">123 Green Street, Eco City, EC 12345</span>
+              </li>
+              <li className="flex items-center">
+                <Phone className="h-5 w-5 text-primary-500 mr-2" />
+                <span className="text-gray-400">(123) 456-7890</span>
+              </li>
+              <li className="flex items-center">
+                <Mail className="h-5 w-5 text-primary-500 mr-2" />
+                <span className="text-gray-400">info@ifoodcycle.com</span>
               </li>
             </ul>
           </div>
         </div>
         
-        <div className="mt-12 border-t border-gray-200 pt-8">
-          <p className="text-base text-gray-400 text-center">
-            &copy; {currentYear} iFoodCycle. All rights reserved.
-          </p>
+        <div className="border-t border-gray-800 mt-12 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-gray-400 text-sm">
+              &copy; {new Date().getFullYear()} iFoodCycle. All rights reserved.
+            </p>
+            <div className="mt-4 md:mt-0 flex space-x-6">
+              <Link to="/privacy" className="text-gray-400 hover:text-primary-500 text-sm">
+                Privacy Policy
+              </Link>
+              <Link to="/terms" className="text-gray-400 hover:text-primary-500 text-sm">
+                Terms of Service
+              </Link>
+              <Link to="/cookies" className="text-gray-400 hover:text-primary-500 text-sm">
+                Cookie Policy
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

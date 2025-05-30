@@ -1,261 +1,218 @@
 import { useState } from 'react'
-import { Filter, X } from 'lucide-react'
+import { X, Filter, ChevronDown } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import useListingStore from '../stores/listingStore'
 
-const CATEGORIES = [
-  'Produce', 
-  'Bakery', 
-  'Dairy', 
-  'Meat', 
-  'Prepared Meals', 
-  'Pantry Items', 
-  'Beverages'
-]
-
-const DIETARY_OPTIONS = [
-  'Vegetarian', 
-  'Vegan', 
-  'Gluten-Free', 
-  'Dairy-Free', 
-  'Nut-Free', 
-  'Organic'
-]
-
 const ListingFilters = () => {
-  const { filters, setFilters, resetFilters } = useListingStore()
   const [isOpen, setIsOpen] = useState(false)
-  
-  const handleCategoryChange = (category) => {
-    const updatedCategories = filters.categories.includes(category)
-      ? filters.categories.filter(c => c !== category)
-      : [...filters.categories, category]
-    
-    setFilters({
-      ...filters,
-      categories: updatedCategories
-    })
-  }
-  
-  const handleDietaryChange = (option) => {
-    const updatedOptions = filters.dietaryOptions.includes(option)
-      ? filters.dietaryOptions.filter(o => o !== option)
-      : [...filters.dietaryOptions, option]
-    
-    setFilters({
-      ...filters,
-      dietaryOptions: updatedOptions
-    })
-  }
-  
-  const handlePriceChange = (e) => {
-    const value = parseInt(e.target.value)
-    setFilters({
-      ...filters,
-      priceRange: [0, value]
-    })
-  }
-  
-  const handleFreeOnlyChange = (e) => {
-    setFilters({
-      ...filters,
-      freeOnly: e.target.checked
-    })
-  }
-  
-  const handleExpiringSoonChange = (e) => {
-    setFilters({
-      ...filters,
-      expiringSoon: e.target.checked
-    })
-  }
-  
-  const hasActiveFilters = () => {
-    return (
-      filters.categories.length > 0 ||
-      filters.dietaryOptions.length > 0 ||
-      filters.priceRange[1] < 100 ||
-      filters.freeOnly ||
-      filters.expiringSoon
-    )
-  }
+  const { 
+    filters, 
+    setFilter, 
+    resetFilters,
+    categories,
+    dietaryOptions,
+    priceRanges,
+    sortOptions
+  } = useListingStore()
   
   return (
     <div className="mb-8">
       <div className="flex justify-between items-center mb-4">
-        <button
+        <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center text-gray-700 hover:text-primary-600"
+          className="flex items-center text-gray-700 hover:text-primary-600 font-medium"
         >
           <Filter className="h-5 w-5 mr-2" />
-          <span className="font-medium">Filters</span>
-          {hasActiveFilters() && (
-            <span className="ml-2 bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded-full">
-              Active
-            </span>
-          )}
+          Filters
+          <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
         
-        {hasActiveFilters() && (
-          <button
+        {Object.values(filters).some(value => 
+          value !== null && value !== '' && 
+          (Array.isArray(value) ? value.length > 0 : true)
+        ) && (
+          <button 
             onClick={resetFilters}
-            className="text-sm text-gray-500 hover:text-gray-700 flex items-center"
+            className="text-sm text-primary-600 hover:text-primary-700 flex items-center"
           >
             <X className="h-4 w-4 mr-1" />
-            Clear all
+            Clear all filters
           </button>
         )}
       </div>
       
-      {isOpen && (
-        <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Price Range */}
-            <div>
-              <h3 className="font-medium text-gray-900 mb-2">Price Range</h3>
-              <div className="mb-2">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                    checked={filters.freeOnly}
-                    onChange={handleFreeOnlyChange}
-                  />
-                  <span className="ml-2 text-sm text-gray-700">Free items only</span>
-                </label>
-              </div>
-              <div className="mt-4">
-                <label className="block text-sm text-gray-700 mb-1">
-                  Max Price: ${filters.priceRange[1]}
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="5"
-                  value={filters.priceRange[1]}
-                  onChange={handlePriceChange}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                  disabled={filters.freeOnly}
-                />
-              </div>
-            </div>
-            
-            {/* Categories */}
-            <div>
-              <h3 className="font-medium text-gray-900 mb-2">Categories</h3>
-              <div className="space-y-2">
-                {CATEGORIES.map(category => (
-                  <label key={category} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                      checked={filters.categories.includes(category)}
-                      onChange={() => handleCategoryChange(category)}
-                    />
-                    <span className="ml-2 text-sm text-gray-700">{category}</span>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-white p-4 rounded-xl shadow-soft mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Category filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Category
                   </label>
-                ))}
-              </div>
-            </div>
-            
-            {/* Dietary Options & Other Filters */}
-            <div>
-              <h3 className="font-medium text-gray-900 mb-2">Dietary Options</h3>
-              <div className="space-y-2">
-                {DIETARY_OPTIONS.map(option => (
-                  <label key={option} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                      checked={filters.dietaryOptions.includes(option)}
-                      onChange={() => handleDietaryChange(option)}
-                    />
-                    <span className="ml-2 text-sm text-gray-700">{option}</span>
+                  <select
+                    value={filters.category || ''}
+                    onChange={(e) => setFilter('category', e.target.value || null)}
+                    className="input"
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                {/* Dietary preferences */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Dietary Preferences
                   </label>
-                ))}
+                  <div className="space-y-2">
+                    {dietaryOptions.map((option) => (
+                      <div key={option} className="flex items-center">
+                        <input
+                          id={`diet-${option}`}
+                          type="checkbox"
+                          className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                          checked={filters.dietary_info?.includes(option) || false}
+                          onChange={(e) => {
+                            const currentDietary = filters.dietary_info || []
+                            if (e.target.checked) {
+                              setFilter('dietary_info', [...currentDietary, option])
+                            } else {
+                              setFilter('dietary_info', currentDietary.filter(item => item !== option))
+                            }
+                          }}
+                        />
+                        <label htmlFor={`diet-${option}`} className="ml-2 text-sm text-gray-700">
+                          {option}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Price range */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Price Range
+                  </label>
+                  <select
+                    value={filters.priceRange || ''}
+                    onChange={(e) => setFilter('priceRange', e.target.value || null)}
+                    className="input"
+                  >
+                    <option value="">Any Price</option>
+                    {priceRanges.map((range) => (
+                      <option key={range.value} value={range.value}>
+                        {range.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                {/* Sort by */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sort By
+                  </label>
+                  <select
+                    value={filters.sortBy || 'newest'}
+                    onChange={(e) => setFilter('sortBy', e.target.value)}
+                    className="input"
+                  >
+                    {sortOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
               
-              <h3 className="font-medium text-gray-900 mt-4 mb-2">Other Filters</h3>
-              <label className="flex items-center">
+              {/* Location filter */}
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Location
+                </label>
                 <input
-                  type="checkbox"
-                  className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                  checked={filters.expiringSoon}
-                  onChange={handleExpiringSoonChange}
+                  type="text"
+                  placeholder="Enter city, neighborhood, or zip code"
+                  value={filters.location || ''}
+                  onChange={(e) => setFilter('location', e.target.value || null)}
+                  className="input"
                 />
-                <span className="ml-2 text-sm text-gray-700">Expiring Soon</span>
-              </label>
+              </div>
+              
+              {/* Active filters */}
+              {Object.values(filters).some(value => 
+                value !== null && value !== '' && 
+                (Array.isArray(value) ? value.length > 0 : true)
+              ) && (
+                <div className="mt-6">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Active Filters:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {filters.category && (
+                      <FilterBadge 
+                        label={`Category: ${filters.category}`}
+                        onRemove={() => setFilter('category', null)}
+                      />
+                    )}
+                    
+                    {filters.dietary_info && filters.dietary_info.map(diet => (
+                      <FilterBadge 
+                        key={diet}
+                        label={diet}
+                        onRemove={() => {
+                          setFilter('dietary_info', filters.dietary_info.filter(item => item !== diet))
+                        }}
+                      />
+                    ))}
+                    
+                    {filters.priceRange && (
+                      <FilterBadge 
+                        label={`Price: ${priceRanges.find(r => r.value === filters.priceRange)?.label}`}
+                        onRemove={() => setFilter('priceRange', null)}
+                      />
+                    )}
+                    
+                    {filters.location && (
+                      <FilterBadge 
+                        label={`Location: ${filters.location}`}
+                        onRemove={() => setFilter('location', null)}
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Active filters display */}
-      {hasActiveFilters() && (
-        <div className="flex flex-wrap gap-2">
-          {filters.freeOnly && (
-            <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full flex items-center">
-              Free Only
-              <button 
-                onClick={() => setFilters({...filters, freeOnly: false})}
-                className="ml-1 text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          )}
-          
-          {filters.priceRange[1] < 100 && !filters.freeOnly && (
-            <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full flex items-center">
-              Max ${filters.priceRange[1]}
-              <button 
-                onClick={() => setFilters({...filters, priceRange: [0, 100]})}
-                className="ml-1 text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          )}
-          
-          {filters.expiringSoon && (
-            <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full flex items-center">
-              Expiring Soon
-              <button 
-                onClick={() => setFilters({...filters, expiringSoon: false})}
-                className="ml-1 text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          )}
-          
-          {filters.categories.map(category => (
-            <span key={category} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full flex items-center">
-              {category}
-              <button 
-                onClick={() => handleCategoryChange(category)}
-                className="ml-1 text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          ))}
-          
-          {filters.dietaryOptions.map(option => (
-            <span key={option} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full flex items-center">
-              {option}
-              <button 
-                onClick={() => handleDietaryChange(option)}
-                className="ml-1 text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
+
+const FilterBadge = ({ label, onRemove }) => (
+  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+    {label}
+    <button 
+      type="button" 
+      onClick={onRemove}
+      className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full text-primary-400 hover:text-primary-600 focus:outline-none"
+    >
+      <X className="h-3 w-3" />
+    </button>
+  </span>
+)
 
 export default ListingFilters
