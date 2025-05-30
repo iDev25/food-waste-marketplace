@@ -22,7 +22,7 @@ const useListingStore = create((set, get) => ({
         .from('listings')
         .select(`
           *,
-          profiles:user_id(
+          profiles:supplier_id(
             id,
             name,
             avatar_url
@@ -54,13 +54,13 @@ const useListingStore = create((set, get) => ({
         .from('listings')
         .select(`
           *,
-          profiles:user_id(
+          profiles:supplier_id(
             id,
             name,
             avatar_url
           )
         `)
-        .eq('user_id', userId)
+        .eq('supplier_id', userId)
         .order('created_at', { ascending: false })
       
       if (error) throw error
