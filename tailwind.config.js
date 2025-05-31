@@ -6,10 +6,6 @@ export default {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['var(--font-sans)'],
-        display: ['var(--font-display)'],
-      },
       colors: {
         primary: {
           50: '#f0fdf4',
@@ -38,14 +34,8 @@ export default {
           950: '#451a03',
         },
       },
-      boxShadow: {
-        soft: '0 2px 15px 0 rgba(0, 0, 0, 0.05)',
-        'soft-lg': '0 4px 25px 0 rgba(0, 0, 0, 0.08)',
-      },
-      borderRadius: {
-        'xl': '0.75rem',
-        '2xl': '1rem',
-        '3xl': '1.5rem',
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
       },
     },
   },

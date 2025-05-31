@@ -1,12 +1,8 @@
 import { Link } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
-import { MapPin, Clock, Heart } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { MapPin, Clock } from 'lucide-react'
 
 const ListingCard = ({ listing }) => {
-  const [isFavorite, setIsFavorite] = useState(false)
-  
   const isExpiringSoon = () => {
     if (!listing.expiry_date) return false
     const expiryDate = new Date(listing.expiry_date)
@@ -15,25 +11,15 @@ const ListingCard = ({ listing }) => {
     return diffHours < 24 && diffHours > 0
   }
   
-  const toggleFavorite = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsFavorite(!isFavorite)
-  }
-  
   return (
-    <motion.div 
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.2 }}
-      className="card hover:shadow-lg"
-    >
+    <div className="card hover:shadow-lg transition-shadow duration-200">
       <Link to={`/listings/${listing.id}`}>
         <div className="relative h-48 w-full overflow-hidden">
           {listing.images && listing.images.length > 0 ? (
             <img 
               src={listing.images[0]} 
               alt={listing.title} 
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              className="w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
@@ -41,27 +27,18 @@ const ListingCard = ({ listing }) => {
             </div>
           )}
           
-          <button
-            onClick={toggleFavorite}
-            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white bg-opacity-80 flex items-center justify-center transition-colors duration-200 hover:bg-opacity-100"
-          >
-            <Heart 
-              className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} 
-            />
-          </button>
-          
           {listing.price === 0 ? (
-            <div className="absolute top-2 left-2 bg-secondary-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+            <div className="absolute top-2 right-2 bg-secondary-500 text-white px-2 py-1 rounded-md text-xs font-medium">
               Free
             </div>
           ) : (
-            <div className="absolute top-2 left-2 bg-primary-500 text-white px-2 py-1 rounded-md text-xs font-medium">
-              ${listing.price?.toFixed(2) || '0.00'}
+            <div className="absolute top-2 right-2 bg-primary-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+              ${listing.price.toFixed(2)}
             </div>
           )}
           
           {isExpiringSoon() && (
-            <div className="absolute bottom-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center">
+            <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-medium flex items-center">
               <Clock className="h-3 w-3 mr-1" />
               Expiring soon
             </div>
@@ -72,14 +49,14 @@ const ListingCard = ({ listing }) => {
           <h3 className="text-lg font-medium text-gray-900 truncate">{listing.title}</h3>
           
           <div className="mt-1 flex items-center text-sm text-gray-500">
-            <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+            <MapPin className="h-4 w-4 mr-1" />
             <span className="truncate">{listing.location || 'Location not specified'}</span>
           </div>
           
           <div className="mt-2">
             <div className="flex flex-wrap gap-1">
               <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                {listing.category || 'Uncategorized'}
+                {listing.category}
               </span>
               
               {listing.dietary_info && listing.dietary_info.map((diet, index) => (
@@ -102,8 +79,8 @@ const ListingCard = ({ listing }) => {
                   alt={listing.profiles.name}
                 />
               ) : (
-                <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                  <span className="text-xs font-medium text-primary-700">
+                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-xs font-medium text-gray-500">
                     {listing.profiles?.name?.charAt(0) || '?'}
                   </span>
                 </div>
@@ -118,7 +95,7 @@ const ListingCard = ({ listing }) => {
           </div>
         </div>
       </Link>
-    </motion.div>
+    </div>
   )
 }
 
