@@ -216,63 +216,47 @@ const Login = () => {
 
               <button
                 type="button"
-                onClick={() => handleSocialSignIn('twitter')}
-                disabled={!!socialLoading}
-                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                disabled={true}
+                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-400 opacity-60 cursor-not-allowed"
                 aria-label="Sign in with X (Twitter)"
+                title="Twitter authentication coming soon"
               >
-                {socialLoading === 'twitter' ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <svg className="h-5 w-5 text-black" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                )}
+                <svg className="h-5 w-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
               </button>
 
               <button
                 type="button"
-                onClick={() => handleSocialSignIn('facebook')}
-                disabled={!!socialLoading}
-                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                disabled={true}
+                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-400 opacity-60 cursor-not-allowed"
                 aria-label="Sign in with Facebook"
+                title="Facebook authentication coming soon"
               >
-                {socialLoading === 'facebook' ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Facebook className="h-5 w-5 text-[#4267B2]" />
-                )}
+                <Facebook className="h-5 w-5 text-[#4267B2]" />
               </button>
 
               <button
                 type="button"
-                onClick={() => handleSocialSignIn('instagram')}
-                disabled={!!socialLoading}
-                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                disabled={true}
+                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-400 opacity-60 cursor-not-allowed"
                 aria-label="Sign in with Instagram"
+                title="Instagram authentication coming soon"
               >
-                {socialLoading === 'instagram' ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Instagram className="h-5 w-5 text-[#E1306C]" />
-                )}
+                <Instagram className="h-5 w-5 text-[#E1306C]" />
               </button>
 
               <button
                 type="button"
-                onClick={() => handleSocialSignIn('nextdoor')}
-                disabled={!!socialLoading}
-                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                disabled={true}
+                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-400 opacity-60 cursor-not-allowed"
                 aria-label="Sign in with NextDoor"
+                title="NextDoor authentication coming soon"
               >
-                {socialLoading === 'nextdoor' ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <svg className="h-5 w-5 text-[#00B551]" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 1.25C6.072 1.25 1.25 6.072 1.25 12S6.072 22.75 12 22.75 22.75 17.928 22.75 12 17.928 1.25 12 1.25zm0 1.5c5.1 0 9.25 4.15 9.25 9.25s-4.15 9.25-9.25 9.25S2.75 17.1 2.75 12 6.9 2.75 12 2.75z" />
-                    <path d="M15.75 8.068a.75.75 0 0 1 .232 1.035l-3.465 5.197a.75.75 0 0 1-1.267 0L7.785 9.103a.75.75 0 0 1 1.267-.802L12 12.445l2.948-4.144a.75.75 0 0 1 .802-.233z" />
-                  </svg>
-                )}
+                <svg className="h-5 w-5 text-[#00B551]" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 1.25C6.072 1.25 1.25 6.072 1.25 12S6.072 22.75 12 22.75 22.75 17.928 22.75 12 17.928 1.25 12 1.25zm0 1.5c5.1 0 9.25 4.15 9.25 9.25s-4.15 9.25-9.25 9.25S2.75 17.1 2.75 12 6.9 2.75 12 2.75z" />
+                  <path d="M15.75 8.068a.75.75 0 0 1 .232 1.035l-3.465 5.197a.75.75 0 0 1-1.267 0L7.785 9.103a.75.75 0 0 1 1.267-.802L12 12.445l2.948-4.144a.75.75 0 0 1 .802-.233z" />
+                </svg>
               </button>
             </div>
           </div>

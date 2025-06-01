@@ -127,6 +127,11 @@ export function AuthProvider({ children }) {
   
   const signInWithSocialProvider = async (provider) => {
     try {
+      // Only use providers that are actually supported by Supabase
+      if (provider !== 'google') {
+        throw new Error(`${provider} authentication is not currently available. Please use email/password or Google sign-in.`)
+      }
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {

@@ -1,7 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Mail, Lock, User, AlertTriangle, Facebook, Loader2, ArrowRight, Check, Instagram } from 'lucide-react'
+import { Mail, Lock, User, AlertTriangle, Facebook, Loader2, ArrowRight, Check, Instagram, MapPin, Building, Search } from 'lucide-react'
+import { useLoadScript } from '@react-google-maps/api'
+import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete'
+
+const libraries = ['places']
 
 const Register = () => {
   const { signUp, signInWithSocialProvider } = useAuth()
@@ -11,19 +15,123 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    isBusiness: false,
+    businessName: '',
+    businessAddress: '',
+    businessPhone: '',
+    businessWebsite: '',
+    businessLat: null,
+    businessLng: null,
+    businessPlaceId: ''
   })
   
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [socialLoading, setSocialLoading] = useState('')
+  const [businessVerificationStep, setBusinessVerificationStep] = useState(0)
+  const [verificationMethod, setVerificationMethod] = useState('')
+  const [verificationCode, setVerificationCode] = useState('')
+  const [verificationSent, setVerificationSent] = useState(false)
+  const [searchResults, setSearchResults] = useState([])
+  const [selectedBusiness, setSelectedBusiness] = useState(null)
+  
+  // Load Google Maps API
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: 'AIzaSyBIUaBvvlXdLIxkhAVVqQJC7jhSg98g7NE', // This is a placeholder - in production use env vars
+    libraries
+  })
+  
+  const {
+    ready,
+    value: searchValue,
+    suggestions: { status, data },
+    setValue: setSearchValue,
+    clearSuggestions
+  } = usePlacesAutocomplete({
+    requestOptions: {
+      types: ['establishment'],
+      componentRestrictions: { country: 'us' }
+    },
+    debounce: 300,
+    cacheKey: 'business-search'
+  })
   
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value, type, checked } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }))
+  }
+  
+  const handleSearchChange = (e) => {
+    setSearchValue(e.target.value)
+  }
+  
+  const handleSelectBusiness = async (suggestion) => {
+    // When a business is selected from the dropdown
+    setSearchValue(suggestion.description)
+    clearSuggestions()
+    
+    try {
+      const results = await getGeocode({ placeId: suggestion.place_id })
+      const { lat, lng } = await getLatLng(results[0])
+      
+      setFormData(prev => ({
+        ...prev,
+        businessName: suggestion.structured_formatting.main_text,
+        businessAddress: suggestion.description,
+        businessLat: lat,
+        businessLng: lng,
+        businessPlaceId: suggestion.place_id
+      }))
+      
+      setSelectedBusiness(suggestion)
+      setBusinessVerificationStep(1)
+    } catch (error) {
+      console.error("Error selecting business:", error)
+      setError("Failed to get business location. Please try again.")
+    }
+  }
+  
+  const handleVerificationMethodSelect = (method) => {
+    setVerificationMethod(method)
+    setBusinessVerificationStep(2)
+  }
+  
+  const sendVerificationCode = async () => {
+    // In a real app, this would send a verification code via the selected method
+    try {
+      setLoading(true)
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setVerificationSent(true)
+      setBusinessVerificationStep(3)
+    } catch (error) {
+      setError("Failed to send verification code. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+  
+  const verifyBusinessOwnership = async () => {
+    // In a real app, this would verify the code with an API
+    try {
+      setLoading(true)
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      if (verificationCode === '123456') { // In a real app, this would be validated server-side
+        setBusinessVerificationStep(4)
+      } else {
+        setError("Invalid verification code. Please try again.")
+      }
+    } catch (error) {
+      setError("Failed to verify code. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
   
   const validateForm = () => {
@@ -52,6 +160,11 @@ const Register = () => {
       return false
     }
     
+    if (formData.isBusiness && businessVerificationStep < 4) {
+      setError('Please complete the business verification process')
+      return false
+    }
+    
     return true
   }
   
@@ -66,7 +179,14 @@ const Register = () => {
       setError('')
       setLoading(true)
       
+      // In a real app, you would include the business data in the signup
       await signUp(formData.email, formData.password, formData.name)
+      
+      // If this is a business account, you would save the business details to the database here
+      if (formData.isBusiness) {
+        // Save business details to database
+        // This would typically be done in the backend after user creation
+      }
       
       navigate('/dashboard')
     } catch (error) {
@@ -93,6 +213,276 @@ const Register = () => {
   
   // Password strength indicators
   const hasMinLength = formData.password.length >= 6
+  
+  // Render business search and verification UI based on step
+  const renderBusinessVerification = () => {
+    if (!formData.isBusiness) return null
+    
+    if (loadError) {
+      return (
+        <div className="mt-6 p-4 bg-red-50 rounded-lg">
+          <p className="text-red-600">Error loading Google Maps API. Please try again later.</p>
+        </div>
+      )
+    }
+    
+    if (!isLoaded) {
+      return (
+        <div className="mt-6 p-4 flex justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary-500" />
+        </div>
+      )
+    }
+    
+    switch (businessVerificationStep) {
+      case 0:
+        return (
+          <div className="mt-6 p-5 bg-primary-50 rounded-lg border border-primary-100 animate-fadeIn">
+            <h3 className="text-lg font-medium text-primary-800 mb-2">Sign up your business</h3>
+            <p className="text-primary-600 mb-4">You're just a few steps away! Let's find your store and set you up!</p>
+            
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                value={searchValue}
+                onChange={handleSearchChange}
+                disabled={!ready}
+                placeholder="Search for your business..."
+                className="input pl-10 transition-all duration-200 border-gray-300 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-400 w-full"
+              />
+            </div>
+            
+            {status === "OK" && (
+              <ul className="mt-2 bg-white rounded-md shadow-lg border border-gray-200 max-h-60 overflow-auto">
+                {data.map((suggestion) => (
+                  <li
+                    key={suggestion.place_id}
+                    onClick={() => handleSelectBusiness(suggestion)}
+                    className="px-4 py-2 hover:bg-primary-50 cursor-pointer border-b border-gray-100 last:border-b-0 flex items-start"
+                  >
+                    <MapPin className="h-5 w-5 text-primary-500 mt-0.5 mr-2 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium text-gray-800">{suggestion.structured_formatting.main_text}</p>
+                      <p className="text-sm text-gray-500">{suggestion.structured_formatting.secondary_text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )
+      
+      case 1:
+        return (
+          <div className="mt-6 p-5 bg-primary-50 rounded-lg border border-primary-100 animate-fadeIn">
+            <h3 className="text-lg font-medium text-primary-800 mb-2">Verify business ownership</h3>
+            <div className="bg-white p-3 rounded-md shadow-sm mb-4 border border-gray-200">
+              <p className="font-medium text-gray-800">{formData.businessName}</p>
+              <p className="text-sm text-gray-500">{formData.businessAddress}</p>
+            </div>
+            
+            <p className="text-primary-600 mb-4">How would you like to verify your ownership?</p>
+            
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => handleVerificationMethodSelect('phone')}
+                className="w-full flex items-center justify-between p-3 border border-gray-300 rounded-md hover:bg-primary-50 hover:border-primary-300 transition-colors"
+              >
+                <span className="font-medium">Phone verification</span>
+                <ArrowRight className="h-4 w-4 text-primary-500" />
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => handleVerificationMethodSelect('email')}
+                className="w-full flex items-center justify-between p-3 border border-gray-300 rounded-md hover:bg-primary-50 hover:border-primary-300 transition-colors"
+              >
+                <span className="font-medium">Email verification</span>
+                <ArrowRight className="h-4 w-4 text-primary-500" />
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => handleVerificationMethodSelect('document')}
+                className="w-full flex items-center justify-between p-3 border border-gray-300 rounded-md hover:bg-primary-50 hover:border-primary-300 transition-colors"
+              >
+                <span className="font-medium">Document upload</span>
+                <ArrowRight className="h-4 w-4 text-primary-500" />
+              </button>
+            </div>
+          </div>
+        )
+      
+      case 2:
+        return (
+          <div className="mt-6 p-5 bg-primary-50 rounded-lg border border-primary-100 animate-fadeIn">
+            <h3 className="text-lg font-medium text-primary-800 mb-2">
+              {verificationMethod === 'phone' ? 'Phone Verification' : 
+               verificationMethod === 'email' ? 'Email Verification' : 'Document Verification'}
+            </h3>
+            
+            <div className="bg-white p-3 rounded-md shadow-sm mb-4 border border-gray-200">
+              <p className="font-medium text-gray-800">{formData.businessName}</p>
+              <p className="text-sm text-gray-500">{formData.businessAddress}</p>
+            </div>
+            
+            {verificationMethod === 'phone' && (
+              <div className="mb-4">
+                <p className="text-primary-600 mb-2">We'll send a verification code to the phone number associated with this business.</p>
+                <div className="bg-yellow-50 p-3 rounded-md border border-yellow-100">
+                  <p className="text-sm text-yellow-800">For demo purposes, the verification code will be: <span className="font-bold">123456</span></p>
+                </div>
+              </div>
+            )}
+            
+            {verificationMethod === 'email' && (
+              <div className="mb-4">
+                <p className="text-primary-600 mb-2">We'll send a verification code to the email address associated with this business.</p>
+                <div className="bg-yellow-50 p-3 rounded-md border border-yellow-100">
+                  <p className="text-sm text-yellow-800">For demo purposes, the verification code will be: <span className="font-bold">123456</span></p>
+                </div>
+              </div>
+            )}
+            
+            {verificationMethod === 'document' && (
+              <div className="mb-4">
+                <p className="text-primary-600 mb-2">Upload a document that proves your ownership of this business.</p>
+                <div className="mt-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Business document
+                  </label>
+                  <input
+                    type="file"
+                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                  />
+                </div>
+                <div className="bg-yellow-50 p-3 rounded-md border border-yellow-100 mt-3">
+                  <p className="text-sm text-yellow-800">For demo purposes, any document will be accepted and the verification code will be: <span className="font-bold">123456</span></p>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={() => setBusinessVerificationStep(1)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Back
+              </button>
+              
+              <button
+                type="button"
+                onClick={sendVerificationCode}
+                disabled={loading}
+                className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors flex items-center"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Sending...
+                  </>
+                ) : (
+                  'Send verification'
+                )}
+              </button>
+            </div>
+          </div>
+        )
+      
+      case 3:
+        return (
+          <div className="mt-6 p-5 bg-primary-50 rounded-lg border border-primary-100 animate-fadeIn">
+            <h3 className="text-lg font-medium text-primary-800 mb-2">Enter verification code</h3>
+            
+            <div className="bg-white p-3 rounded-md shadow-sm mb-4 border border-gray-200">
+              <p className="font-medium text-gray-800">{formData.businessName}</p>
+              <p className="text-sm text-gray-500">{formData.businessAddress}</p>
+            </div>
+            
+            <p className="text-primary-600 mb-4">
+              {verificationMethod === 'phone' 
+                ? 'We sent a 6-digit code to the phone number associated with this business.' 
+                : verificationMethod === 'email'
+                ? 'We sent a 6-digit code to the email address associated with this business.'
+                : 'Enter the verification code from your uploaded document.'}
+            </p>
+            
+            <div className="mb-4">
+              <label htmlFor="verificationCode" className="block text-sm font-medium text-gray-700 mb-1">
+                Verification code
+              </label>
+              <input
+                id="verificationCode"
+                type="text"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                placeholder="123456"
+                className="input transition-all duration-200 border-gray-300 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-400 w-full"
+                maxLength={6}
+              />
+              <div className="bg-yellow-50 p-3 rounded-md border border-yellow-100 mt-3">
+                <p className="text-sm text-yellow-800">For demo purposes, enter: <span className="font-bold">123456</span></p>
+              </div>
+            </div>
+            
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={() => setBusinessVerificationStep(2)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Back
+              </button>
+              
+              <button
+                type="button"
+                onClick={verifyBusinessOwnership}
+                disabled={loading || verificationCode.length !== 6}
+                className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Verifying...
+                  </>
+                ) : (
+                  'Verify'
+                )}
+              </button>
+            </div>
+          </div>
+        )
+      
+      case 4:
+        return (
+          <div className="mt-6 p-5 bg-green-50 rounded-lg border border-green-100 animate-fadeIn">
+            <div className="flex items-center mb-3">
+              <div className="bg-green-100 rounded-full p-1">
+                <Check className="h-5 w-5 text-green-600" />
+              </div>
+              <h3 className="text-lg font-medium text-green-800 ml-2">Business verified!</h3>
+            </div>
+            
+            <div className="bg-white p-3 rounded-md shadow-sm mb-4 border border-gray-200">
+              <p className="font-medium text-gray-800">{formData.businessName}</p>
+              <p className="text-sm text-gray-500">{formData.businessAddress}</p>
+            </div>
+            
+            <p className="text-green-600">
+              Your business has been successfully verified. Complete your registration to start using GrubLinX for your business!
+            </p>
+          </div>
+        )
+      
+      default:
+        return null
+    }
+  }
   
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
@@ -161,63 +551,47 @@ const Register = () => {
 
               <button
                 type="button"
-                onClick={() => handleSocialSignIn('twitter')}
-                disabled={!!socialLoading}
-                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                disabled={true}
+                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-400 opacity-60 cursor-not-allowed"
                 aria-label="Sign up with X (Twitter)"
+                title="Twitter authentication coming soon"
               >
-                {socialLoading === 'twitter' ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <svg className="h-5 w-5 text-black" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                )}
+                <svg className="h-5 w-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
               </button>
 
               <button
                 type="button"
-                onClick={() => handleSocialSignIn('facebook')}
-                disabled={!!socialLoading}
-                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                disabled={true}
+                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-400 opacity-60 cursor-not-allowed"
                 aria-label="Sign up with Facebook"
+                title="Facebook authentication coming soon"
               >
-                {socialLoading === 'facebook' ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Facebook className="h-5 w-5 text-[#4267B2]" />
-                )}
+                <Facebook className="h-5 w-5 text-[#4267B2]" />
               </button>
 
               <button
                 type="button"
-                onClick={() => handleSocialSignIn('instagram')}
-                disabled={!!socialLoading}
-                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                disabled={true}
+                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-400 opacity-60 cursor-not-allowed"
                 aria-label="Sign up with Instagram"
+                title="Instagram authentication coming soon"
               >
-                {socialLoading === 'instagram' ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Instagram className="h-5 w-5 text-[#E1306C]" />
-                )}
+                <Instagram className="h-5 w-5 text-[#E1306C]" />
               </button>
 
               <button
                 type="button"
-                onClick={() => handleSocialSignIn('nextdoor')}
-                disabled={!!socialLoading}
-                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                disabled={true}
+                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-400 opacity-60 cursor-not-allowed"
                 aria-label="Sign up with NextDoor"
+                title="NextDoor authentication coming soon"
               >
-                {socialLoading === 'nextdoor' ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <svg className="h-5 w-5 text-[#00B551]" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 1.25C6.072 1.25 1.25 6.072 1.25 12S6.072 22.75 12 22.75 22.75 17.928 22.75 12 17.928 1.25 12 1.25zm0 1.5c5.1 0 9.25 4.15 9.25 9.25s-4.15 9.25-9.25 9.25S2.75 17.1 2.75 12 6.9 2.75 12 2.75z" />
-                    <path d="M15.75 8.068a.75.75 0 0 1 .232 1.035l-3.465 5.197a.75.75 0 0 1-1.267 0L7.785 9.103a.75.75 0 0 1 1.267-.802L12 12.445l2.948-4.144a.75.75 0 0 1 .802-.233z" />
-                  </svg>
-                )}
+                <svg className="h-5 w-5 text-[#00B551]" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 1.25C6.072 1.25 1.25 6.072 1.25 12S6.072 22.75 12 22.75 22.75 17.928 22.75 12 17.928 1.25 12 1.25zm0 1.5c5.1 0 9.25 4.15 9.25 9.25s-4.15 9.25-9.25 9.25S2.75 17.1 2.75 12 6.9 2.75 12 2.75z" />
+                  <path d="M15.75 8.068a.75.75 0 0 1 .232 1.035l-3.465 5.197a.75.75 0 0 1-1.267 0L7.785 9.103a.75.75 0 0 1 1.267-.802L12 12.445l2.948-4.144a.75.75 0 0 1 .802-.233z" />
+                </svg>
               </button>
             </div>
             
@@ -337,12 +711,29 @@ const Register = () => {
                 </p>
               </div>
             </div>
+            
+            <div className="flex items-center">
+              <input
+                id="isBusiness"
+                name="isBusiness"
+                type="checkbox"
+                checked={formData.isBusiness}
+                onChange={handleChange}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded transition-colors duration-200"
+              />
+              <label htmlFor="isBusiness" className="ml-2 block text-sm text-gray-700 flex items-center">
+                <Building className="h-4 w-4 mr-1 text-primary-500" />
+                I'm registering as a business
+              </label>
+            </div>
+            
+            {renderBusinessVerification()}
 
             <div>
               <button
                 type="submit"
                 className="w-full btn btn-primary group relative overflow-hidden transition-all duration-300 transform hover:translate-y-[-2px]"
-                disabled={loading}
+                disabled={loading || (formData.isBusiness && businessVerificationStep < 4)}
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
