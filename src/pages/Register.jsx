@@ -36,9 +36,9 @@ const Register = () => {
   const [searchResults, setSearchResults] = useState([])
   const [selectedBusiness, setSelectedBusiness] = useState(null)
   
-  // Load Google Maps API
+  // Load Google Maps API using environment variable
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyBIUaBvvlXdLIxkhAVVqQJC7jhSg98g7NE', // This is a placeholder - in production use env vars
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries
   })
   
