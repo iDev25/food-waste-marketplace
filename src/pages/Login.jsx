@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Mail, Lock, AlertTriangle, Facebook, Loader2, ArrowRight } from 'lucide-react'
+import { Mail, Lock, AlertTriangle, Facebook, Loader2, ArrowRight, Instagram } from 'lucide-react'
 
 const Login = () => {
   const { signIn, signInWithSocialProvider } = useAuth()
@@ -192,7 +192,7 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-3 gap-3">
+            <div className="mt-6 grid grid-cols-5 gap-2">
               <button
                 type="button"
                 onClick={() => handleSocialSignIn('google')}
@@ -241,6 +241,37 @@ const Login = () => {
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   <Facebook className="h-5 w-5 text-[#4267B2]" />
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSocialSignIn('instagram')}
+                disabled={!!socialLoading}
+                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                aria-label="Sign in with Instagram"
+              >
+                {socialLoading === 'instagram' ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Instagram className="h-5 w-5 text-[#E1306C]" />
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSocialSignIn('nextdoor')}
+                disabled={!!socialLoading}
+                className="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-all duration-200 hover:shadow-md hover:border-gray-400"
+                aria-label="Sign in with NextDoor"
+              >
+                {socialLoading === 'nextdoor' ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <svg className="h-5 w-5 text-[#00B551]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 1.25C6.072 1.25 1.25 6.072 1.25 12S6.072 22.75 12 22.75 22.75 17.928 22.75 12 17.928 1.25 12 1.25zm0 1.5c5.1 0 9.25 4.15 9.25 9.25s-4.15 9.25-9.25 9.25S2.75 17.1 2.75 12 6.9 2.75 12 2.75z" />
+                    <path d="M15.75 8.068a.75.75 0 0 1 .232 1.035l-3.465 5.197a.75.75 0 0 1-1.267 0L7.785 9.103a.75.75 0 0 1 1.267-.802L12 12.445l2.948-4.144a.75.75 0 0 1 .802-.233z" />
+                  </svg>
                 )}
               </button>
             </div>
