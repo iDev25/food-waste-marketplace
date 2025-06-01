@@ -29,7 +29,7 @@ const Navbar = () => {
                 <path d="M12 12 2 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M12 12 12 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span className="ml-2 text-xl font-bold text-gray-900">iFoodCycle</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">GrubLinX</span>
             </Link>
             
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
