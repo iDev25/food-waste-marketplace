@@ -69,7 +69,7 @@ const Home = () => {
               A better way to reduce food waste
             </p>
             <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-              iFoodCycle connects food suppliers with excess inventory to individuals and organizations who can use it.
+              GrubLinX connects food suppliers with excess inventory to individuals and organizations who can use it.
             </p>
           </div>
 
@@ -120,7 +120,7 @@ const Home = () => {
         <div className="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
             <span className="block">Ready to reduce food waste?</span>
-            <span className="block">Start using iFoodCycle today.</span>
+            <span className="block">Start using GrubLinX today.</span>
           </h2>
           <p className="mt-4 text-lg leading-6 text-primary-200">
             Join thousands of businesses and individuals already making a difference in their communities.
@@ -147,7 +147,7 @@ const Home = () => {
             <div className="space-y-8 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-8">
               <div className="p-6 bg-gray-50 rounded-lg">
                 <p className="text-gray-600 italic">
-                  "As a restaurant owner, I used to throw away so much good food at the end of the day. Now I can list it on iFoodCycle and know it's going to people who will enjoy it."
+                  "As a restaurant owner, I used to throw away so much good food at the end of the day. Now I can list it on GrubLinX and know it's going to people who will enjoy it."
                 </p>
                 <div className="mt-4 flex items-center">
                   <div className="flex-shrink-0">
@@ -166,7 +166,7 @@ const Home = () => {
 
               <div className="p-6 bg-gray-50 rounded-lg">
                 <p className="text-gray-600 italic">
-                  "Our food bank has been able to source so much more fresh produce and prepared meals through iFoodCycle. It's been a game-changer for our community."
+                  "Our food bank has been able to source so much more fresh produce and prepared meals through GrubLinX. It's been a game-changer for our community."
                 </p>
                 <div className="mt-4 flex items-center">
                   <div className="flex-shrink-0">
@@ -245,7 +245,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
           <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
             <span className="block">Ready to get started?</span>
-            <span className="block text-primary-600">Join iFoodCycle today.</span>
+            <span className="block text-primary-600">Join GrubLinX today.</span>
           </h2>
           <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
             <div className="inline-flex rounded-md shadow">

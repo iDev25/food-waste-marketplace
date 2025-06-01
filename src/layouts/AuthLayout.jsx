@@ -12,7 +12,7 @@ const AuthLayout = () => {
             <path d="M12 12 12 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </Link>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">iFoodCycle</h2>
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">GrubLinX</h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">

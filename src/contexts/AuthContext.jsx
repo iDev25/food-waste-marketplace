@@ -125,6 +125,25 @@ export function AuthProvider({ children }) {
     }
   }
   
+  const signInWithSocialProvider = async (provider) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      })
+      
+      if (error) {
+        throw error
+      }
+      
+      return data
+    } catch (error) {
+      throw error
+    }
+  }
+  
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut()
@@ -178,6 +197,7 @@ export function AuthProvider({ children }) {
     loading,
     signUp,
     signIn,
+    signInWithSocialProvider,
     signOut,
     resetPassword,
     updatePassword,

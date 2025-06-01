@@ -16,10 +16,10 @@ const Footer = () => {
                 <path d="M12 12 2 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M12 12 12 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span className="ml-2 text-xl font-bold text-gray-900">iFoodCycle</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">GrubLinX</span>
             </div>
             <p className="mt-4 text-gray-600 max-w-md">
-              iFoodCycle connects surplus food with people who need it. Our mission is to reduce food waste, support communities, and create a more sustainable food system.
+              GrubLinX connects surplus food with people who need it. Our mission is to reduce food waste, support communities, and create a more sustainable food system.
             </p>
             <div className="mt-6 flex space-x-6">
               <a href="#" className="text-gray-400 hover:text-gray-500">
@@ -34,7 +34,7 @@ const Footer = () => {
                 <span className="sr-only">Instagram</span>
                 <Instagram className="h-6 w-6" />
               </a>
-              <a href="mailto:info@ifoodcycle.com" className="text-gray-400 hover:text-gray-500">
+              <a href="mailto:info@grublinx.com" className="text-gray-400 hover:text-gray-500">
                 <span className="sr-only">Email</span>
                 <Mail className="h-6 w-6" />
               </a>
@@ -100,7 +100,7 @@ const Footer = () => {
         
         <div className="mt-12 border-t border-gray-200 pt-8">
           <p className="text-base text-gray-400 text-center">
-            &copy; {currentYear} iFoodCycle. All rights reserved.
+            &copy; {currentYear} GrubLinX. All rights reserved.
           </p>
         </div>
       </div>
