@@ -18,8 +18,8 @@ function App() {
       {/* Public routes with main layout */}
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
-        <Route path="privacy-policy" element={<Privacy />} />
-        <Route path="terms-of-service" element={<Terms />} />
+        <Route path="privacy" element={<Privacy />} />
+        <Route path="terms" element={<Terms />} />
         <Route path="browse-food" element={<BrowseFood />} />
         <Route path="how-it-works" element={<HowItWorks />} />
       </Route>
